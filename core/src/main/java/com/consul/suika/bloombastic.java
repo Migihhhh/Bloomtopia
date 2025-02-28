@@ -104,6 +104,8 @@ public class bloombastic implements Screen {
     private TextureRegion[] npcFrames1;
     private TextureRegion[] npcFrames2;
     private float npcStateTime;
+    private float lastTouchTime = 0;
+    private final float touchCooldown = 0.5f;
 
 
     public void show() {
@@ -259,16 +261,26 @@ public class bloombastic implements Screen {
                     return;
                 }
 
-                if (restartButtonSprite.getBoundingRectangle().contains(touchPos.x, touchPos.y)) {
-                    restartGame();
-                    isPaused = false;
-                    ignoreNextTouch = true;
-                    return;
+                if (Gdx.input.justTouched()) {
+                    float currentTime = Gdx.graphics.getDeltaTime();
+                    if (currentTime - lastTouchTime > touchCooldown) {
+                        lastTouchTime = currentTime;
+
+                        if (restartButtonSprite.getBoundingRectangle().contains(touchPos.x, touchPos.y)) {
+                            restartGame();
+                            isPaused = false;
+                            ignoreNextTouch = true;
+                        }
+                    }
                 }
 
-                if (exitButtonSprite.getBoundingRectangle().contains(touchPos.x, touchPos.y)) {
+                if (Gdx.input.justTouched() && exitButtonSprite.getBoundingRectangle().contains(touchPos.x, touchPos.y)) {
+                    try {
+                        Thread.sleep(200); // Small delay to prevent accidental double-tap
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     game.setScreen(new FirstScreen(game));
-                    return;
                 }
                 return;
             }
