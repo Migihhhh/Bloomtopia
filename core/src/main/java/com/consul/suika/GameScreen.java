@@ -148,6 +148,10 @@ public class GameScreen implements Screen {
     private SpriteBatch leaderboardBatch;
 
     Texture leaderboardBG;
+    private boolean firstTouch=false;
+    private boolean isSoundEnabled=true;
+    private Texture soundButtonTexture,soundButtonPressedTexture;
+    private ImageButton soundButton;
     private ApplicationListener currentListener;// The active game or menu
 
     @Override
@@ -197,7 +201,8 @@ public class GameScreen implements Screen {
         createPlatform(110f / PPM, 80.5f / PPM, 1.5f / PPM, 100 / PPM); //right wall
         createPlatform(56 / PPM, 35.5f / PPM, 70 / PPM, 1.1f / PPM); //floor
 
-        buttonSound = Gdx.audio.newSound(Gdx.files.internal("buttonSound.mp3"));
+        buttonSound = Gdx.audio.newSound(Gdx.files.internal("suikaButtonSound.mp3"));
+        dropSound = Gdx.audio.newSound(Gdx.files.internal("suikaDropSound.mp3"));
 
 
         // for button positioning
@@ -279,8 +284,9 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("PauseButton", "Button clicked");
-                buttonSound.play();
-
+                if (isSoundEnabled) {
+                    buttonSound.play();
+                }
                 if (!isPaused) {
                     isPaused = true;
                     Gdx.input.setInputProcessor(menuStage); // Switch input processor to the pause menu stage
@@ -291,7 +297,9 @@ public class GameScreen implements Screen {
         continueButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                buttonSound.play();
+                if (isSoundEnabled) {
+                    buttonSound.play();
+                }
                 Gdx.app.log("ContinueButton", "Button clicked");
                 if (isPaused) {
                     isPaused = false;
@@ -305,7 +313,9 @@ public class GameScreen implements Screen {
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonSound.play();
+                if (isSoundEnabled) {
+                    buttonSound.play();
+                }
                 Gdx.app.log("RestartButton", "Button clicked");
                 resetGame();
                 isPaused=false;
@@ -317,7 +327,9 @@ public class GameScreen implements Screen {
         quitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonSound.play();
+                if (isSoundEnabled) {
+                    buttonSound.play();
+                }
                 Gdx.app.log("quitButton", "Button clicked");
                 isMusicPlaying=false;
                 music.pause();
@@ -326,12 +338,38 @@ public class GameScreen implements Screen {
         });
 
         //music path
-        music = Gdx.audio.newMusic(Gdx.files.internal("game.mp3"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("SuikaMusic.mp3"));
         music.setLooping(true);
         music.setVolume(0.5f);
         music.play();
 
         //music button and its style // on and off
+        soundButtonTexture = new Texture(Gdx.files.internal("soundButtonEnabled.png"));
+        soundButtonPressedTexture = new Texture(Gdx.files.internal("soundButtonDisabled.png"));
+        ImageButton.ImageButtonStyle soundButtonStyle = new ImageButton.ImageButtonStyle();
+        soundButtonStyle.up = new TextureRegionDrawable(soundButtonTexture);
+        soundButtonStyle.checked = new TextureRegionDrawable(soundButtonPressedTexture);
+        soundButton = new ImageButton(soundButtonStyle);
+        menuStage.addActor(soundButton);
+        Gdx.app.log("SoundButton", "Button added to screen");
+        soundButton.getImage().setScale(0.01f); // This will reduce the size
+        soundButton.setSize(0.28f, 0.20f);
+        soundButton.setPosition(0.55f * viewportWidth, 0.3f * viewportHeight); // Moves the button upwards
+
+        soundButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                isSoundEnabled = !isSoundEnabled;
+                soundButton.setChecked(!isSoundEnabled); // Toggle music button state
+                if (!isSoundEnabled){
+                    dropSound.stop();
+                    buttonSound.stop();
+                } else {
+                    isSoundEnabled=true;
+                }
+            }
+        });
+
         musicButtonTexture = new Texture(Gdx.files.internal("musicEnabled.png"));
         musicButtonPressedTexture = new Texture(Gdx.files.internal("musicDisabled.png"));
         ImageButton.ImageButtonStyle musicButtonStyle = new ImageButton.ImageButtonStyle();
@@ -388,7 +426,9 @@ public class GameScreen implements Screen {
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonSound.play();
+                if (isSoundEnabled) {
+                    buttonSound.play();
+                }
                 Gdx.app.log("ExitButton", "Button clicked");
                 isMusicPlaying=false;
                 music.pause();
@@ -400,6 +440,9 @@ public class GameScreen implements Screen {
         retryButton.addListener(new ChangeListener() {
                                     @Override
                                     public void changed(ChangeEvent event, Actor actor) {
+                                        if (isSoundEnabled) {
+                                            buttonSound.play();
+                                        }
                                         resetGame();
                                         isRestarting = false;
                                         isTouching = false;
@@ -434,7 +477,9 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("leaderboardButton", "Button clicked");
-                buttonSound.play();
+                if (isSoundEnabled) {
+                    buttonSound.play();
+                }
                 if (!inLeaderboard) {
                     inLeaderboard = true;
                     Gdx.input.setInputProcessor(leaderboardStage); // Switch input processor to the leaderboard stage
@@ -455,7 +500,9 @@ public class GameScreen implements Screen {
         leaderboardBackButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonSound.play();
+                if (isSoundEnabled) {
+                    buttonSound.play();
+                }
                 Gdx.app.log("leaderboardBackButton", "Button clicked");
                 inLeaderboard = false;
                 isTouching = false;
@@ -567,6 +614,13 @@ public class GameScreen implements Screen {
 
         //IF YOU TAP / CLICK MOUSE 1 IT DROPS FLOWERS
         if (Gdx.input.isTouched()) {
+            //first touch prevents drop sound from looping
+            if (isSoundEnabled) {
+                if(!firstTouch) {
+                    dropSound.play();
+                    firstTouch = true;
+                }
+            }
             touchPos.set(Gdx.input.getX(), Gdx.input.getY());
             viewport.unproject(touchPos);
 
@@ -593,6 +647,8 @@ public class GameScreen implements Screen {
             floatingFlowerSprite.setSize(currentFlowerType.getRadius() * 2, currentFlowerType.getRadius() * 2);
 
             isTouching = false;
+        } else {
+            firstTouch = false;
         }
         // THIS TOGGLES THE HITBOXES
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F3)) {
