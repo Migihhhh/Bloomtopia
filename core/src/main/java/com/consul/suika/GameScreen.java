@@ -332,8 +332,8 @@ public class GameScreen implements Screen {
         music.play();
 
         //music button and its style // on and off
-        musicButtonTexture = new Texture(Gdx.files.internal("MusicEnabled.png"));
-        musicButtonPressedTexture = new Texture(Gdx.files.internal("MusicDisabled.png"));
+        musicButtonTexture = new Texture(Gdx.files.internal("musicEnabled.png"));
+        musicButtonPressedTexture = new Texture(Gdx.files.internal("musicDisabled.png"));
         ImageButton.ImageButtonStyle musicButtonStyle = new ImageButton.ImageButtonStyle();
         musicButtonStyle.up = new TextureRegionDrawable(musicButtonTexture);
         musicButtonStyle.checked = new TextureRegionDrawable(musicButtonPressedTexture);
@@ -359,7 +359,7 @@ public class GameScreen implements Screen {
 
         // GAME OVER STAGE UI AND BUTTONS
         gameOverStage = new Stage(viewport);
-        gameOverTexture = new Texture("gameover3.png");
+        gameOverTexture = new Texture("gameOver3.png");
         TextureRegion gameOvertextureRegion = new TextureRegion(gameOverTexture);
         Image gameOverUI = new Image(gameOvertextureRegion);
         gameOverUI.setScale(0.7f);
@@ -611,17 +611,14 @@ public class GameScreen implements Screen {
     public enum FlowerType {
         //STEP 3 OF ADDING NEW FLOWER: THIS WILL SET THE FLOWER LEVEL AND ITS SIZE
         DAFFODIL(1, 4 / PPM),
-        BUTTERCUP(2, 6 / PPM),
-        MARRIGOLD(3, 8 / PPM),
-        CHERRYBLOSSOM(4, 10 / PPM),
-        ORCHID(5, 12 / PPM),
+        BUTTERCUP(2, 8 / PPM),
+        MARRIGOLD(3, 12 / PPM),
+        CHERRYBLOSSOM(4, 16 / PPM),
+        ORCHID(5, 20 / PPM),
         // PLEASE RENAME THESE BELOW!
-        SUNFLOWER(6, 14 / PPM),
-        JASMINE(7, 16 / PPM),
-        FREESIA(8, 18 / PPM),
-        DAISY(9, 20 / PPM),
-        DANDELION(10, 22 / PPM),
-        HIBISCUS(11, 24 / PPM);
+        SUNFLOWER(6, 24 / PPM),
+        JASMINE(7, 27 / PPM),
+        FREESIA(8, 30 / PPM);
 
         private final int level;
         private final float radius;
@@ -698,12 +695,6 @@ public class GameScreen implements Screen {
                 return jasmine;
             case FREESIA:
                 return freesia;
-            case DAISY:
-                return daisy;
-            case DANDELION:
-                return dandelion;
-            case HIBISCUS:
-                return hibiscus;
             //STEP 4 OF ADDING NEW FLOWER: ADD THE NAME OF THE FLOWER AND THE TEXTURE
             default:
                 return hibiscus; // Default texture
@@ -853,7 +844,7 @@ public void update(float delta) {
     //pausing// stops movement
     if (isPaused || isRestarting || !isGameActive) return;
 
-    world.step(1 / 360f, 6, 2);
+    world.step(1 / 160f, 6, 2);
     if (isGameOver()) {
         Gdx.app.log("Game Over", "A flower reached the top!");
         return;
