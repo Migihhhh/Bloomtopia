@@ -5,6 +5,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -55,6 +56,8 @@ public class FirstScreen implements Screen {
 
     private boolean isMusicPlayingmm = true;
     private Music mainMenuMusic;
+    private Sound mainMenuButtonSound,gameSelectSound;
+
 
 
     public FirstScreen(Game game) {
@@ -71,6 +74,9 @@ public class FirstScreen implements Screen {
         // MAIN MENU BG
         menuBatch = new SpriteBatch();
         mainMenuBG = new Texture("mainMenuBG.png");
+
+        gameSelectSound = Gdx.audio.newSound(Gdx.files.internal("gameSelect.mp3"));
+        mainMenuButtonSound = Gdx.audio.newSound(Gdx.files.internal("mainMenuButtonSound.mp3"));
 
         mainMenuStage = new Stage(viewport);
 
@@ -158,7 +164,7 @@ public class FirstScreen implements Screen {
 
         game2Button.getImage().setScale(1f); // This will reduce the size
         game2Button.setSize(0.46f, 0.38f);
-        game2Button.setPosition(0.05f * viewportWidth, 0.2f * viewportHeight);
+        game2Button.setPosition(0.05f * viewportWidth, 0.25f * viewportHeight);
         gamemodeStage.addActor(game2Button);
 
         game3buttonTexture = new Texture("game3Button.png");
@@ -171,7 +177,7 @@ public class FirstScreen implements Screen {
 
         game3Button.getImage().setScale(1f); // This will reduce the size
         game3Button.setSize(0.46f, 0.38f);
-        game3Button.setPosition(0.53f * viewportWidth, 0.2f * viewportHeight);
+        game3Button.setPosition(0.53f * viewportWidth, 0.25f * viewportHeight);
         gamemodeStage.addActor(game3Button);
 
         StoryModeButtonTexture = new Texture("StoryModeButton.png");
@@ -191,6 +197,7 @@ public class FirstScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("mainMenuPlayButton", "Play Button clicked");
+                mainMenuButtonSound.play();
                 inMainMenu=false;
                 inGameMode=true;
                 Gdx.input.setInputProcessor(gamemodeStage);
@@ -201,6 +208,7 @@ public class FirstScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("mainMenuPlayButton", "Play Button clicked");
+                mainMenuButtonSound.play();
                 inGameMode=false;
                 inMainMenu=true;
                 Gdx.input.setInputProcessor(mainMenuStage);
@@ -211,6 +219,7 @@ public class FirstScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("mainMenuPlayButton", "Play Button clicked");
+                gameSelectSound.play();
                 inGameMode=false;
                 inMainMenu=false;
                 mainMenuMusic.pause();
@@ -259,6 +268,8 @@ public class FirstScreen implements Screen {
         mainMenuMusic.setLooping(true);
         mainMenuMusic.setVolume(0.5f);
         mainMenuMusic.play();
+
+
     }
 
 @Override
