@@ -238,6 +238,20 @@ public class FirstScreen implements Screen {
             }
         });
 
+        game3Button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("mainMenuPlayButton", "Play Button clicked");
+                gameSelectSound.play();
+                inGameMode=false;
+                inMainMenu=false;
+                mainMenuMusic.pause();
+                game.setScreen(new Game3Screen());
+            }
+        });
+
+
+
         mainMenucreditsTexture = new Texture("creditsButton.png");
         mainMenucreditsTextureRegion = new TextureRegion(mainMenucreditsTexture);
         mainMenucreditsTextureRegionDrawable = new TextureRegionDrawable(mainMenucreditsTextureRegion);
