@@ -405,10 +405,15 @@ public class bloombastic implements Screen {
     }
 
     private void restartGame() {
+        Gdx.app.log("Debug", "Restarting game...");
+
+        gameStarted = true; // Ensure the game starts
+        gameState = GameState.PLAYING; // Reset game state
+
         score = 0;
         peopleCounter = 0;
-        gameState = GameState.PLAYING;
         isPaused = false;
+        ignoreNextTouch = false;
 
         currentLane = 1; // Start in the middle lane
         targetLane = 1;
@@ -422,13 +427,18 @@ public class bloombastic implements Screen {
         crackSprites.clear();
         trafficIslandSprites.clear();
         peopleSprites.clear();
+        animatedPeopleMap.clear();
 
         currentObstacleScrollSpeed = obstacleBaseScrollSpeed;
         currentRoadScrollSpeed = roadBaseScrollSpeed;
         timeSinceLastSpeedIncrease = 0f;
         currentFrameDuration = 0.4f; // Reset frame duration
         playerAnimation.setFrameDuration(currentFrameDuration); // Update animation frame duration
+
         updateObstacleSpawnDelay();
+
+        Gdx.app.log("Debug", "Game restarted successfully.");
+
     }
 
     private void updateObstacleSpawnDelay() {
