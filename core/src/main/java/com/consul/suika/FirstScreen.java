@@ -231,12 +231,21 @@ public class FirstScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("mainMenuPlayButton", "Play Button clicked");
-                inGameMode=false;
-                inMainMenu=false;
+                inGameMode = false;
+                inMainMenu = false;
                 mainMenuMusic.pause();
+
+                // Disable FirstScreen's input
+                Gdx.input.setInputProcessor(null);
+
+                if (!(game.getScreen() instanceof bloombastic)) {
+                    Gdx.app.log("Debug", "Switching to Bloombastic");
+                }
+
                 game.setScreen(new bloombastic(game));
             }
         });
+
 
         game3Button.addListener(new ClickListener() {
             @Override

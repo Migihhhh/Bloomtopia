@@ -3,6 +3,7 @@ package com.consul.suika;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -107,6 +108,7 @@ public class bloombastic implements Screen {
     private float lastTouchTime = 0;
     private final float touchCooldown = 0.5f;
 
+    private boolean ignoreFirstTouch = true;
 
     public void show() {
         currentObstacleScrollSpeed = obstacleBaseScrollSpeed;
@@ -114,6 +116,16 @@ public class bloombastic implements Screen {
         font = new BitmapFont();
         font.getData().setScale(1f);
         glyphLayout = new GlyphLayout();
+        Gdx.app.log("Debug", "Bloombastic screen loaded");
+        ignoreFirstTouch = true;
+        Gdx.input.setInputProcessor(null); // Clear any previous input processor
+        Gdx.input.setInputProcessor(new InputAdapter() {
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                Gdx.app.log("Bloombastic", "Screen touched");
+                return true;
+            }
+        });
 
         // Load textures (unchanged)
         player = new Texture("g2_mcSpritesheet.png");
@@ -225,6 +237,14 @@ public class bloombastic implements Screen {
 
     @Override
     public void render(float delta) {
+        Gdx.app.log("Debug", "Touched at: " + touchPos.x + ", " + touchPos.y);
+        if (ignoreFirstTouch) {
+            if (!Gdx.input.isTouched()) {
+                ignoreFirstTouch = false; // Once no touch is detected, allow input
+            }
+            return; // Skip processing while ignoring first touch
+        }
+
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -274,14 +294,12 @@ public class bloombastic implements Screen {
                     }
                 }
 
-                if (Gdx.input.justTouched() && exitButtonSprite.getBoundingRectangle().contains(touchPos.x, touchPos.y)) {
-                    try {
-                        Thread.sleep(200); // Small delay to prevent accidental double-tap
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                if (Gdx.input.justTouched()) {
+                    if (exitButtonSprite.getBoundingRectangle().contains(touchPos.x, touchPos.y)) {
+                        game.setScreen(new FirstScreen(game));
                     }
-                    game.setScreen(new FirstScreen(game));
                 }
+
                 return;
             }
 

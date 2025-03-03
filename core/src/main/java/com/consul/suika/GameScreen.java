@@ -753,7 +753,7 @@ public class GameScreen implements Screen {
                 return freesia;
             //STEP 4 OF ADDING NEW FLOWER: ADD THE NAME OF THE FLOWER AND THE TEXTURE
             default:
-                return hibiscus; // Default texture
+                return daffidol; // Default texture
         }
     }
 
